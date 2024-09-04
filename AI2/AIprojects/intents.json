@@ -1,0 +1,330 @@
+{
+  "intents": [
+    {
+      "tag": "greetings",
+      "patterns": [
+        "hello",
+        "hey",
+        "hi",
+        "hy",
+        "good day",
+        "Greetings",
+        "What's up?",
+        "how is it going?"
+      ],
+      "responses": [
+        "Hello",
+        "hey",
+        "what can I do for you?"
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "cya",
+        "See you later",
+        "Goodbye",
+        "I am leaving",
+        "Have a Good day",
+        "bye",
+        "cao",
+        "see ya"
+      ],
+      "responses": [
+        "sad to see you go :(",
+        "Talk to you later",
+        "Goodbye!"
+      ]
+    },
+    {
+      "tag": "age",
+      "patterns": [
+        "how old",
+        "how old is lucky",
+        "what is your age",
+        "how old are you",
+        "age?"
+      ],
+      "responses": [
+        "My owner Lucky is 17 years old!",
+        "17 years"
+      ]
+    },
+    {
+      "tag": "name",
+      "patterns": [
+        "what is your name",
+        "what should i call you",
+        "whats your name?",
+        "who are you?",
+        "Can you tell me your name"
+      ],
+      "responses": [
+        "You can call me Dowkin!",
+        "I am Dowkin!",
+        "I am Dowkin the assistant of lucky!"
+      ]
+    },
+    {
+      "tag": "shop",
+      "patterns": [
+        "Id like to buy somthing",
+        "what are your products?",
+        "what do you recommend?",
+        "what are you selling?"
+      ],
+      "responses": [
+        "Downtown is the best and Kigali market",
+        "a lot of market are in kigali city"
+      ]
+    },
+    {
+      "tag": "time",
+      "patterns": [
+        "what is the time",
+        "what time is it",
+        "when are we now"
+      ],
+      "responses": [
+        "the time is 24/7"
+      ]
+    },
+    {
+      "tag": "Love",
+      "patterns": [
+        "what kind of girls do can i date?",
+        "i need to find love",
+        "what kind of boys can i date?",
+        "i love someone"
+      ],
+      "responses": [
+        "you can tell your crush what you really feel",
+        "You can date a person according to their characteristics if they match yours",
+        "look all around you to see people who are really interested in you"
+      ]
+    },
+    {
+      "tag": "weather",
+      "patterns": [
+        "What's the weather like?",
+        "Is it going to rain today?",
+        "Weather forecast"
+      ],
+      "responses": [
+        "You can check the weather forecast on weather.com",
+        "It's sunny with a chance of showers"
+      ]
+    },
+    {
+      "tag": "location",
+      "patterns": [
+        "Where are you located?",
+        "What's your address?",
+        "Where can I find you?"
+      ],
+      "responses": [
+        "I am located in kigali city",
+        "You can find me at karuruma"
+      ]
+    },
+    {
+      "tag": "help",
+      "patterns": [
+        "Help me",
+        "I need assistance",
+        "i need your help",
+        "Can you assist me?"
+      ],
+      "responses": [
+        "Sure, what do you need help with?",
+        "I'm here to help, please let me know what you need assistance with."
+      ]
+    },
+    {
+      "tag": "feedback",
+      "patterns": [
+        "How can I provide feedback?",
+        "I have a suggestion",
+        "Feedback"
+      ],
+      "responses": [
+        "We welcome your feedback, you can email us at my owners email kagabolucky@72gmail.com",
+        "Thank you for your suggestion, we appreciate it! so contact us on kagabolucky72gmail.com"
+      ]
+    },
+    {
+      "tag": "payment",
+      "patterns": [
+        "How can I pay?",
+        "Do you accept credit cards?",
+        "Payment methods"
+      ],
+      "responses": [
+        "We accept cash, credit/debit cards, and mobile payments",
+        "You can pay using PayPal or Stripe"
+      ]
+    },
+    {
+      "tag": "delivery",
+      "patterns": [
+        "Do you offer delivery?",
+        "How long does delivery take?",
+        "Delivery options"
+      ],
+      "responses": [
+        "Yes, we offer delivery within [area], delivery time is usually [time frame]",
+        "You can choose between standard and express delivery options"
+      ]
+    },
+    {
+      "tag": "returns",
+      "patterns": [
+        "Can I return items?",
+        "What's your return policy?",
+        "Refund process"
+      ],
+      "responses": [
+        "Yes, we accept returns within [number] days of purchase, please refer to our return policy for more details",
+        "Refunds are processed within [number] days after we receive the returned item"
+      ]
+    },
+    {
+      "tag": "product_info",
+      "patterns": [
+        "Tell me about [product]",
+        "Product details",
+        "Features of [product]"
+      ],
+      "responses": [
+        "Our [product] is [description], it features [features]",
+        "You can find more information about [product] on our website"
+      ]
+    },
+    {
+      "tag": "tech_support",
+      "patterns": [
+        "I'm having technical issues",
+        "Technical support",
+        "Help with troubleshooting"
+      ],
+      "responses": [
+        "Please provide more details about the issue you're experiencing so we can assist you better",
+        "Our technical support team is available to help you with any issues you encounter"
+      ]
+    },
+    {
+      "tag": "promotions",
+      "patterns": [
+        "Do you have any discounts?",
+        "Promotions",
+        "Sales"
+      ],
+      "responses": [
+        "Yes, we currently have [discount/sale] on [product]",
+        "You can find our latest promotions on our website"
+      ]
+    },
+    {
+      "tag": "membership",
+      "patterns": [
+        "How can I become a member?",
+        "Membership benefits",
+        "Subscription options"
+      ],
+      "responses": [
+        "You can sign up for membership on our website or in-store",
+        "Our membership offers exclusive benefits such as [benefits]"
+      ]
+    },
+    {
+      "tag": "faqs",
+      "patterns": [
+        "Frequently asked questions",
+        "Can you answer some common questions?",
+        "FAQs"
+      ],
+      "responses": [
+        "Sure, here are some frequently asked questions: [lucky put it in]",
+        "You can find answers to common questions on our FAQ page"
+      ]
+    },
+    {
+      "tag": "events",
+      "patterns": [
+        "Are there any upcoming events?",
+        "Event calendar",
+        "Event details"
+      ],
+      "responses": [
+        "Yes, we have an eclipse happening on 8/4/2024, you can find more details on this website nbcnews.com",
+        "You can check our event calendar for upcoming events"
+      ]
+    },
+    {
+      "tag": "language_support",
+      "patterns": [
+        "Do you offer support in other languages?",
+        "Language options",
+        "Language preferences"
+      ],
+      "responses": [
+        "Yes, we offer support in kinyarwanda, you can change the language settings in your account",
+        "Please let us know if you prefer assistance in a specific language"
+      ]
+    },
+    {
+      "tag": "accessibility",
+      "patterns": [
+        "Do you offer accessibility options?",
+        "Accessibility features",
+        "Accessibility accommodations"
+      ],
+      "responses": [
+        "Yes, we strive to make our services accessible to everyone, please let us know if"
+      ]
+    },
+    {
+      "tag": "hobbies",
+      "patterns": [
+        "what thing can i do us a hobbie",
+        "what is my hobbei",
+        "what thing do i like to do?"
+      ],
+      "responses": [
+        "hobbies are many but popular ones are like singing, painting ,playing sports",
+        "hobbies that are familiar to many people are playing sports and singing",
+        "your hobbby can be singing, painting or playing sports"
+      ]
+    },
+    {
+      "tag": "thanking",
+      "patterns": [
+        "thank you!",
+        " i appreciate your help",
+        "you did great AI",
+        "you are amazing"
+      ],
+      "responses": [
+        "it is my job to assist you",
+        "always welcome",
+        "do you need anything else?",
+        "i'm happy that you gaot what you wanted",
+        "glad to satisfy you"
+      ]
+    },
+    {
+      "tag": "apologise",
+      "patterns": [
+        "sorry that's not correst please",
+        "you are wrong",
+        "bad answer",
+        "incorrect response",
+        "not that accurate"
+      ],
+      "responses": [
+        "very sorry for that! could you please ask me that again",
+        "i apologise for my bad response ask me again please"
+      ]
+    }
+  ]
+}
