@@ -513,3 +513,126 @@ output = block(x)
 
 print("input shape:", x.shape)
 print("output shape:", output.shape)
+
+
+class GPTModel(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
+        self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
+        self.drop_emb = nn.Dropout(cfg["drop_rate"])
+
+        self.trf_blocks = nn.Sequential(
+            *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
+        )
+
+        self.final_norm = LayerNorm(cfg["emb_dim"])
+        self.out_head = nn.Linear(
+            cfg["emb_dim"], cfg["vocab_size"], bias=False
+        )
+
+    def forward(self, in_idx):
+        batch_size, seq_len = in_idx.shape
+        tok_embeds = self.tok_emb(in_idx)
+
+        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
+        x = tok_embeds + pos_embeds
+        x = self.drop_emb(x)
+        x = self.trf_blocks(x)
+        x = self.final_norm(x)
+        logits = self.out_head(x)
+        return logits
+
+
+torch.manual_seed(123)
+model = GPTModel(GPT_CONFIG_124M)
+
+out = model(batch)
+print("Input batch:\n", batch)
+print("\nOutput shape:", out.shape)
+print(out)
+
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total number of parameters: {total_params:,}")
+
+print("Token embedding layer shape:", model.tok_emb.weight.shape)
+print("output layer shape:", model.out_head.weight.shape)
+
+total_params_gpt2 = total_params - sum(p.numel() for p in model.out_head.parameters())
+print(f"Number of trainable parameters considering weight tying:", total_params_gpt2)
+
+total_size_bytes = total_params * 4
+total_size_mb = total_size_bytes / (1024 * 1024)
+print(f"Total size of the model: {total_size_mb: .2f} MB")
+
+
+def generate_text_simple(model, idx, max_new_tokens, context_size):
+    for _ in range(max_new_tokens):
+        idx_cond = idx[:, -context_size:]
+        with torch.no_grad():
+            logits = model(idx_cond)
+
+        logits = logits[:, -1, :]
+        probas = torch.softmax(logits, dim=-1)
+        idx_next = torch.argmax(probas, dim=-1, keepdim=True)
+        idx = torch.cat((idx, idx_next), dim=1)
+
+    return idx
+
+
+start_context = "Hello, I am"
+encoded = tokenizer.encode(start_context)
+print("encoded:", encoded)
+encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+print("encoded_tensor.shape:", encoded_tensor.shape)
+
+model.eval()
+out = generate_text_simple(
+    model=model,
+    idx=encoded_tensor,
+    max_new_tokens=10,
+    context_size=GPT_CONFIG_124M["context_length"]
+)
+print("Output:", out)
+print("output length:", len(out[0]))
+
+decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+print(decoded_text)
+
+
+
+
+GPT_CONFIG_124M = {
+    "vocab_size": 50257,
+    "context_length": 256,
+    "emb_dim": 768,
+    "n_heads": 12,
+    "n_layers": 12,
+    "drop_rate": 0.1,
+    "qkv_bias": False
+}
+torch.manual_seed(123)
+model = GPTModel(GPT_CONFIG_124M)
+model.eval()
+
+def text_to_token_ids(text, tokenizer):
+    encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
+    encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+    # .unsqueeze(0) adds the batch dimensions
+    return encoded_tensor
+
+def token_ids_to_text(token_ids, tokenizer):
+    flat = token_ids.squeeze(0) # remove batch dimension
+    return tokenizer.decode(flat.tolist())
+
+start_context = "Every effort moves you"
+tokenizer = tiktoken.get_encoding("gpt2")
+
+token_ids = generate_text_simple(
+    model=model,
+    idx=text_to_token_ids(start_context, tokenizer),
+    max_new_tokens=10,
+    context_size=GPT_CONFIG_124M["context_length"]
+)
+print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
+
