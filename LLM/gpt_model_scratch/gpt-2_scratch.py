@@ -636,3 +636,15 @@ token_ids = generate_text_simple(
 )
 print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
 
+
+inputs  = torch.tensor([[16833,3626, 6100], #["every effort moves",
+                        [40,1107,588]])     # "I really like"]
+
+targets = torch.tensor([[3626, 6100, 345],   #[" effort moves you",
+                        [588, 428, 11311]])  # " really like chocolate"]
+
+with torch.no_grad():
+    logits = model(inputs)
+probas = torch.softmax(logits, dim=-1) # probability of each token
+print(probas.shape)
+
