@@ -599,9 +599,6 @@ print("output length:", len(out[0]))
 decoded_text = tokenizer.decode(out.squeeze(0).tolist())
 print(decoded_text)
 
-
-
-
 GPT_CONFIG_124M = {
     "vocab_size": 50257,
     "context_length": 256,
@@ -615,15 +612,18 @@ torch.manual_seed(123)
 model = GPTModel(GPT_CONFIG_124M)
 model.eval()
 
+
 def text_to_token_ids(text, tokenizer):
     encoded = tokenizer.encode(text, allowed_special={'<|endoftext|>'})
     encoded_tensor = torch.tensor(encoded).unsqueeze(0)
     # .unsqueeze(0) adds the batch dimensions
     return encoded_tensor
 
+
 def token_ids_to_text(token_ids, tokenizer):
-    flat = token_ids.squeeze(0) # remove batch dimension
+    flat = token_ids.squeeze(0)  # remove batch dimension
     return tokenizer.decode(flat.tolist())
+
 
 start_context = "Every effort moves you"
 tokenizer = tiktoken.get_encoding("gpt2")
@@ -636,15 +636,27 @@ token_ids = generate_text_simple(
 )
 print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
 
+inputs = torch.tensor([[16833, 3626, 6100],  # ["every effort moves",
+                       [40, 1107, 588]])  # "I really like"]
 
-inputs  = torch.tensor([[16833,3626, 6100], #["every effort moves",
-                        [40,1107,588]])     # "I really like"]
-
-targets = torch.tensor([[3626, 6100, 345],   #[" effort moves you",
+targets = torch.tensor([[3626, 6100, 345],  # [" effort moves you",
                         [588, 428, 11311]])  # " really like chocolate"]
 
 with torch.no_grad():
     logits = model(inputs)
-probas = torch.softmax(logits, dim=-1) # probability of each token
+probas = torch.softmax(logits, dim=-1)  # probability of each token
 print(probas.shape)
 
+token_ids = torch.argmax(probas, dim=-1, keepdim=True)
+print("Token IDs:\n", token_ids)
+
+print(f"Target batch 1:  {token_ids_to_text(targets[0], tokenizer)}")
+print(f"Outputs batch 1: {token_ids_to_text(token_ids[0].flatten(), tokenizer)}")
+
+text_idx = 0
+target_probas_1 = probas[text_idx, [0, 1, 2], targets[text_idx]]
+print("Text 1:", target_probas_1)
+
+text_idx = 1
+target_probas_2 = probas[text_idx, [0, 1, 2], targets[text_idx]]
+print("Text 2:", target_probas_2)
