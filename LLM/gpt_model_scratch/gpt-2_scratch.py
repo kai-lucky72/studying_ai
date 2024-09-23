@@ -660,3 +660,27 @@ print("Text 1:", target_probas_1)
 text_idx = 1
 target_probas_2 = probas[text_idx, [0, 1, 2], targets[text_idx]]
 print("Text 2:", target_probas_2)
+
+log_probas = torch.log(torch.cat((target_probas_1, target_probas_2)))
+print(log_probas)
+
+avg_log_probas = torch.mean(log_probas)
+print(avg_log_probas)
+
+neg_avg_log_probas = avg_log_probas * -1
+print(neg_avg_log_probas)
+
+print("Logits shape: ", logits.shape)
+print("Targets shape: ", targets.shape)
+
+logits_flat = logits.flatten(0,1)
+targets_flat = targets.flatten()
+print("Flattened logits: ", logits_flat.shape)
+print("Flattened target: ", targets_flat.shape)
+
+loss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)
+print(loss)
+
+perplexity = torch.exp(loss)
+print(perplexity)
+
