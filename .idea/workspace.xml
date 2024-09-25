@@ -7,7 +7,6 @@
     <list default="true" id="56ef387e-5ee8-4a87-b3ba-ce435f01955c" name="Changes" comment="new">
       <change afterPath="$PROJECT_DIR$/LLM/gpt_model_scratch/sampling.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/LLM/gpt_model_scratch/the-verdict.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/LLM/gpt_model_scratch/gpt-2_scratch.py" beforeDir="false" afterPath="$PROJECT_DIR$/LLM/gpt_model_scratch/gpt-2_scratch.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

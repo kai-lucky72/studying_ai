@@ -769,3 +769,17 @@ with torch.no_grad():
 
 print("Training loss: ", train_loss)
 print("Validation loss: ", val_loss)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
