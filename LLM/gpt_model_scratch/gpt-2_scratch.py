@@ -66,36 +66,38 @@ queries = sa_v2.W_query(inputs)
 keys = sa_v2.W_key(inputs)
 attn_scores = queries @ keys.T
 attn_weights = torch.softmax(attn_scores / keys.shape[-1] ** 0.5, dim=-1)
-#print("Attention weights of step one:", attn_weights)
+# print("Attention weights of step one:", attn_weights)
 
 context_length = attn_scores.shape[0]
 mask_simple = torch.tril(torch.ones(context_length, context_length))
-#print("a mask of values of step two:\n", mask_simple)
+# print("a mask of values of step two:\n", mask_simple)
 
 masked_simple = attn_weights * mask_simple
-#print("a masked attention of step two:\n", masked_simple)
+# print("a masked attention of step two:\n", masked_simple)
 
 row_sums = masked_simple.sum(dim=1, keepdim=True)
 masked_simple_norm = masked_simple / row_sums
-#print("a normalised masked attention weights of step three:\n", masked_simple_norm)
+# print("a normalised masked attention weights of step three:\n", masked_simple_norm)
 
-#print("\n the second way to efficiently mask attn weights")
+# print("\n the second way to efficiently mask attn weights")
 
 mask = torch.triu(torch.ones(context_length, context_length), diagonal=1)
 masked = attn_scores.masked_fill(mask.bool(), -torch.inf)
-#print("masked attn scores:\n", masked)
+# print("masked attn scores:\n", masked)
 
 attn_weights = torch.softmax(masked / keys.shape[-1] ** 0.5, dim=1)
-#print("the masked attn weights:\n", attn_weights)
+# print("the masked attn weights:\n", attn_weights)
 
 torch.manual_seed(123)
 dropout = torch.nn.Dropout(0.5)
 example = torch.ones(6, 6)
-#print(dropout(example))
-#print(dropout(attn_weights))
+# print(dropout(example))
+# print(dropout(attn_weights))
 
 batch = torch.stack((inputs, inputs), dim=0)
-#print(batch.shape)
+
+
+# print(batch.shape)
 
 
 class CausalAttention(nn.Module):
@@ -128,7 +130,9 @@ torch.manual_seed(123)
 context_length = batch.shape[1]
 ca = CausalAttention(d_in, d_out, context_length, 0.0)
 context_vecs = ca(batch)
-#print("context_vecs.shape:", context_vecs.shape)
+
+
+# print("context_vecs.shape:", context_vecs.shape)
 
 
 class MultiHeadAttentionWrapper(nn.Module):
@@ -147,10 +151,12 @@ context_length = batch.shape[1]
 d_in, d_out = 3, 2
 mha = MultiHeadAttentionWrapper(d_in, d_out, context_length, 0.0, num_heads=2)
 context_vecs = mha(batch)
-#print(context_vecs)
-#print("context_vecs.shape:", context_vecs.shape)
 
-#print("an efficient multi-head attention class")
+
+# print(context_vecs)
+# print("context_vecs.shape:", context_vecs.shape)
+
+# print("an efficient multi-head attention class")
 
 
 class MultiHeadAttention(nn.Module):
@@ -217,23 +223,23 @@ a = torch.tensor([[[[0.2745, 0.6584, 0.2775, 0.8573],
                     [0.4066, 0.2318, 0.4545, 0.9737],
                     [0.4606, 0.5159, 0.4220, 0.5786]]]])
 
-#print(a @ a.transpose(2, 3))
+# print(a @ a.transpose(2, 3))
 
 first_head = a[0, 0, :, :]
 first_res = first_head @ first_head.T
-#print("First head:\n", first_res)
+# print("First head:\n", first_res)
 
 second_head = a[0, 1, :, :]
 second_res = second_head @ second_head.T
-#print("\nSecond head:\n", second_res)
+# print("\nSecond head:\n", second_res)
 
 torch.manual_seed(123)
 batch_size, context_length, d_in = batch.shape
 d_out = 2
 mha = MultiHeadAttention(d_in, d_out, context_length, 0.0, num_heads=2)
 context_vecs = mha(batch)
-#print(context_vecs)
-#print("context_vecs.shape:", context_vecs.shape)
+# print(context_vecs)
+# print("context_vecs.shape:", context_vecs.shape)
 
 torch.manual_seed(123)
 batch_size = 8
@@ -315,34 +321,36 @@ txt2 = "Everyday holds a"
 batch.append(torch.tensor(tokenizer.encode(txt1)))
 batch.append(torch.tensor(tokenizer.encode(txt2)))
 batch = torch.stack(batch, dim=0)
-#print(batch)
+# print(batch)
 torch.manual_seed(123)
 model = DummyGPTModel(GPT_CONFIG_124M)
 logits = model(batch)
-#print("Output shape:", logits.shape)
+# print("Output shape:", logits.shape)
 print(logits)
 
 torch.manual_seed(123)
 batch_example = torch.randn(2, 5)
 layer = nn.Sequential(nn.Linear(5, 6), nn.ReLU())
 out = layer(batch_example)
-#print(out)
+# print(out)
 
 mean = out.mean(dim=-1, keepdim=True)
 var = out.var(dim=-1, keepdim=True)
-#print("Mean:\n", mean)
-#print("Var:\n", var)
+# print("Mean:\n", mean)
+# print("Var:\n", var)
 
 out_norm = (out - mean) / torch.sqrt(var)
 mean = out_norm.mean(dim=-1, keepdim=True)
 var = out_norm.var(dim=-1, keepdim=True)
-#print("Normalized layer outputs:\n", out_norm)
-#print("Mean:\n", mean)
-#print("Variance:\n", var)
+# print("Normalized layer outputs:\n", out_norm)
+# print("Mean:\n", mean)
+# print("Variance:\n", var)
 
 torch.set_printoptions(sci_mode=False)
-#print("Mean:\n", mean)
-#print("Variance:\n", var)
+
+
+# print("Mean:\n", mean)
+# print("Variance:\n", var)
 
 
 class LayerNorm(nn.Module):
@@ -363,8 +371,10 @@ ln = LayerNorm(emb_dim=5)
 out_ln = ln(batch_example)
 mean = out_ln.mean(dim=-1, keepdim=True)
 var = out_ln.var(dim=-1, keepdim=True, unbiased=False)
-#print("Mean:\n", mean)
-#print("Variance:\n", var)
+
+
+# print("Mean:\n", mean)
+# print("Variance:\n", var)
 
 
 class GELU(nn.Module):
@@ -414,7 +424,9 @@ class FeedForward(nn.Module):
 ffn = FeedForward(GPT_CONFIG_124M)
 x = torch.rand(2, 3, 768)
 out = ffn(x)
-#print(out.shape)
+
+
+# print(out.shape)
 
 
 class ExampleDeepNeuralNetwork(nn.Module):
@@ -514,8 +526,9 @@ x = torch.rand(2, 4, 768)
 block = TransformerBlock(GPT_CONFIG_124M)
 output = block(x)
 
-#print("input shape:", x.shape)
-#print("output shape:", output.shape)
+
+# print("input shape:", x.shape)
+# print("output shape:", output.shape)
 
 
 class GPTModel(nn.Module):
@@ -551,22 +564,24 @@ torch.manual_seed(123)
 model = GPTModel(GPT_CONFIG_124M)
 
 out = model(batch)
-#print("Input batch:\n", batch)
-#print("\nOutput shape:", out.shape)
-#print(out)
+# print("Input batch:\n", batch)
+# print("\nOutput shape:", out.shape)
+# print(out)
 
 total_params = sum(p.numel() for p in model.parameters())
-#print(f"Total number of parameters: {total_params:,}")
+# print(f"Total number of parameters: {total_params:,}")
 
-#print("Token embedding layer shape:", model.tok_emb.weight.shape)
-#print("output layer shape:", model.out_head.weight.shape)
+# print("Token embedding layer shape:", model.tok_emb.weight.shape)
+# print("output layer shape:", model.out_head.weight.shape)
 
 total_params_gpt2 = total_params - sum(p.numel() for p in model.out_head.parameters())
-#print(f"Number of trainable parameters considering weight tying:", total_params_gpt2)
+# print(f"Number of trainable parameters considering weight tying:", total_params_gpt2)
 
 total_size_bytes = total_params * 4
 total_size_mb = total_size_bytes / (1024 * 1024)
-#print(f"Total size of the model: {total_size_mb: .2f} MB")
+
+
+# print(f"Total size of the model: {total_size_mb: .2f} MB")
 
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
@@ -585,9 +600,9 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
 start_context = "Hello, I am"
 encoded = tokenizer.encode(start_context)
-#print("encoded:", encoded)
+# print("encoded:", encoded)
 encoded_tensor = torch.tensor(encoded).unsqueeze(0)
-#print("encoded_tensor.shape:", encoded_tensor.shape)
+# print("encoded_tensor.shape:", encoded_tensor.shape)
 
 model.eval()
 out = generate_text_simple(
@@ -596,11 +611,11 @@ out = generate_text_simple(
     max_new_tokens=10,
     context_size=GPT_CONFIG_124M["context_length"]
 )
-#print("Output:", out)
-#print("output length:", len(out[0]))
+# print("Output:", out)
+# print("output length:", len(out[0]))
 
 decoded_text = tokenizer.decode(out.squeeze(0).tolist())
-#print(decoded_text)
+# print(decoded_text)
 
 GPT_CONFIG_124M = {
     "vocab_size": 50257,
@@ -637,7 +652,7 @@ token_ids = generate_text_simple(
     max_new_tokens=10,
     context_size=GPT_CONFIG_124M["context_length"]
 )
-#print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
+# print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
 
 inputs = torch.tensor([[16833, 3626, 6100],  # ["every effort moves",
                        [40, 1107, 588]])  # "I really like"]
@@ -651,41 +666,41 @@ probas = torch.softmax(logits, dim=-1)  # probability of each token
 print(probas.shape)
 
 token_ids = torch.argmax(probas, dim=-1, keepdim=True)
-#print("Token IDs:\n", token_ids)
+# print("Token IDs:\n", token_ids)
 
-#print(f"Target batch 1:  {token_ids_to_text(targets[0], tokenizer)}")
-#print(f"Outputs batch 1: {token_ids_to_text(token_ids[0].flatten(), tokenizer)}")
+# print(f"Target batch 1:  {token_ids_to_text(targets[0], tokenizer)}")
+# print(f"Outputs batch 1: {token_ids_to_text(token_ids[0].flatten(), tokenizer)}")
 
 text_idx = 0
 target_probas_1 = probas[text_idx, [0, 1, 2], targets[text_idx]]
-#print("Text 1:", target_probas_1)
+# print("Text 1:", target_probas_1)
 
 text_idx = 1
 target_probas_2 = probas[text_idx, [0, 1, 2], targets[text_idx]]
-#print("Text 2:", target_probas_2)
+# print("Text 2:", target_probas_2)
 
 log_probas = torch.log(torch.cat((target_probas_1, target_probas_2)))
-#print(log_probas)
+# print(log_probas)
 
 avg_log_probas = torch.mean(log_probas)
-#print(avg_log_probas)
+# print(avg_log_probas)
 
 neg_avg_log_probas = avg_log_probas * -1
-#print(neg_avg_log_probas)
+# print(neg_avg_log_probas)
 
-#print("Logits shape: ", logits.shape)
-#print("Targets shape: ", targets.shape)
+# print("Logits shape: ", logits.shape)
+# print("Targets shape: ", targets.shape)
 
 logits_flat = logits.flatten(0, 1)
 targets_flat = targets.flatten()
-#print("Flattened logits: ", logits_flat.shape)
-#print("Flattened target: ", targets_flat.shape)
+# print("Flattened logits: ", logits_flat.shape)
+# print("Flattened target: ", targets_flat.shape)
 
 loss = torch.nn.functional.cross_entropy(logits_flat, targets_flat)
-#print(loss)
+# print(loss)
 
 perplexity = torch.exp(loss)
-#print(perplexity)
+# print(perplexity)
 
 file_path = "the-verdict.txt"
 with open(file_path, "r", encoding="utf-8") as file:
@@ -693,8 +708,8 @@ with open(file_path, "r", encoding="utf-8") as file:
 
 total_characters = len(text_data)
 total_tokens = len(tokenizer.encode(text_data))
-#print("Charactes: ", total_characters)
-#print("Tokens:", total_tokens)
+# print("Charactes: ", total_characters)
+# print("Tokens:", total_tokens)
 
 train_ratio = 0.90
 split_idx = int(train_ratio * len(text_data))
@@ -702,6 +717,7 @@ train_data = text_data[:split_idx]
 val_data = text_data[split_idx:]
 
 from sampling import create_dataloader_v1
+
 torch.manual_seed(123)
 
 train_loader = create_dataloader_v1(
@@ -737,12 +753,13 @@ def calc_loss_batch(input_batch, target_batch, model, device):
     target_batch = target_batch.to(device)
     logits = model(input_batch)
     loss = torch.nn.functional.cross_entropy(
-        logits.flatten(0,1), target_batch.flatten()
+        logits.flatten(0, 1), target_batch.flatten()
     )
     return loss
 
+
 def calc_loss_loader(data_loader, model, device, num_batches=None):
-    total_loss= 0.
+    total_loss = 0.
     if len(data_loader) == 0:
         return float("nan")
     elif num_batches is None:
@@ -752,7 +769,7 @@ def calc_loss_loader(data_loader, model, device, num_batches=None):
     for i, (input_batch, target_batch) in enumerate(data_loader):
         if i < num_batches:
             loss = calc_loss_batch(
-                input_batch, target_batch,model,device
+                input_batch, target_batch, model, device
             )
             total_loss += loss.item()
 
@@ -821,37 +838,41 @@ def evaluate_model(model, train_loader, val_loader, device, eval_iter):
     model.train()
     return train_loss, val_loss
 
+
 def generate_and_print_sample(model, tokenizer, device, start_context):
     model.eval()
     context_size = model.pos_emb.weight.shape[0]
     encoded = text_to_token_ids(start_context, tokenizer).to(device)
     with torch.no_grad():
         token_ids = generate_text_simple(
-            model = model, idx=encoded,
+            model=model, idx=encoded,
             max_new_tokens=50, context_size=context_size
         )
         decoded_text = token_ids_to_text(token_ids, tokenizer)
-        print(decoded_text.replace("\n", " ")) # campact print format
+        print(decoded_text.replace("\n", " "))  # campact print format
 
     model.train()
 
+
 torch.manual_seed(123)
-model= GPTModel(GPT_CONFIG_124M)
+model = GPTModel(GPT_CONFIG_124M)
 model.to(device)
 optmizer = torch.optim.AdamW(
     model.parameters(),
     lr=0.0004, weight_decay=0.1
 )
-num_epochs =10
+num_epochs = 10
 train_losses, val_losses, token_seen = train_model_simple(
     model, train_loader, val_loader, optmizer, device,
     num_epochs=num_epochs, eval_freq=5, eval_iter=1,
     start_context="Every effort moves you", tokenizer=tokenizer
 )
 
-import matplotlib as plt
+import matplotlib.pyplot as plt
+
+
 def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
-    fig, ax1 = plt.subplots(figsize=(5,3))
+    fig, ax1 = plt.subplots(figsize=(5, 3))
     ax1.plot(epochs_seen, train_losses, label="Training loss")
     ax1.plot(
         epochs_seen, val_losses, linestyle="-.", label="validation loss"
@@ -865,19 +886,78 @@ def plot_losses(epochs_seen, tokens_seen, train_losses, val_losses):
     fig.tight_layout()
     plt.show()
 
+
 epochs_tensor = torch.linspace(0, num_epochs, len(train_losses))
 plot_losses(epochs_tensor, token_seen, train_losses, val_losses)
 
+model.to("cpu")
+model.eval()
+
+tokenizer = tiktoken.get_encoding("gpt2")
+token_ids = generate_text_simple(
+    model=model,
+    idx=text_to_token_ids("Every effort moves you", tokenizer),
+    max_new_tokens=25,
+    context_size=GPT_CONFIG_124M["context_length"]
+)
+print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
+
+vocab = {
+    "closer": 0,
+    "every": 1,
+    "effort": 2,
+    "forward": 3,
+    "inches": 4,
+    "moves": 5,
+    "pizza": 6,
+    "toward": 7,
+    "you": 8,
+}
+
+inverse_vocab = {v: k for k, v in vocab.items()}
+
+next_token_logits = torch.tensor(
+    [4.51, 0.89, -1.90, 6.75, 1.63, -1.62, -1.89, 6.28, 1.79]
+)
+
+probas = torch.softmax(next_token_logits, dim=0)
+next_token_id = torch.argmax(probas).item()
+print(inverse_vocab[next_token_id])
+
+torch.manual_seed(123)
+next_token_id = torch.multinomial(probas, num_samples=1).item()
+print(inverse_vocab[next_token_id])
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def print_sampled_tokens(probas):
+    torch.manual_seed(123)
+    sample = [torch.multinomial(probas, num_samples=1).item()
+              for i in range(1_000)]
+    sampled_ids = torch.bincount(torch.tensor(sample))
+    for i, freq in enumerate(sampled_ids):
+        print(f"{freq} x {inverse_vocab[i]}")
 
 
+print_sampled_tokens(probas)
 
 
+def softmax_with_temperature(logits, temperature):
+    scaled_logits = logits / temperature
+    return torch.softmax(scaled_logits, dim=0)
 
 
-
-
-
-
+temperatures = [1, 0.1, 5]
+scaled_probas = [softmax_with_temperature(next_token_logits, T)
+                 for T in temperatures]
+x = torch.arange(len(vocab))
+bar_width = 0.15
+fig, ax = plt.subplots(figsize=(5, 3))
+for i, T in enumerate(temperatures):
+    rects = ax.bar(x + i * bar_width, scaled_probas[i],
+                   bar_width, label=f'Temperature = {T}')
+    ax.set_ylabel('Probability')
+    ax.set_xticks(x)
+    ax.set_xticklabels(vocab.keys(), rotation=90)
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
